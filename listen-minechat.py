@@ -45,15 +45,15 @@ async def write_log_message(message, logfile):
     show_default=True,
 )
 @click.option(
-    '-h',
-    '--history',
+    '-o',
+    '--output',
     default='chat-log.txt',
     type=str,
     help='Path to file to write chat history',
     show_default=True,
 )
-def main(host, port, history):
-    asyncio.run(handle_read_chat(host=host, port=port, log_file=history))
+def main(host, port, output):
+    asyncio.run(handle_read_chat(host=host, port=port, log_file=output))
 
 
 if __name__ == '__main__':
