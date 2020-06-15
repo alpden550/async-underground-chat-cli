@@ -1,14 +1,14 @@
-import argparse
 import asyncio
 from datetime import datetime
 
 import aiofiles
+import click
 
 
 async def handle_read_chat(host=None, port=None, log_file='chat-log.txt'):
     reader, _ = await asyncio.open_connection(
-        host='minechat.dvmn.org',
-        port=5000,
+        host=host,
+        port=port,
     )
 
     await write_log_message('Установлено соединение\n', log_file)
@@ -17,6 +17,7 @@ async def handle_read_chat(host=None, port=None, log_file='chat-log.txt'):
         line = await reader.readline()
         if not line:
             break
+
         line = line.decode()
         await write_log_message(line, log_file)
 
@@ -27,8 +28,32 @@ async def write_log_message(message, logfile):
         await chatfile.write(f'[{formatted_timenow}] {message}')
 
 
-def main():
-    asyncio.run(handle_read_chat())
+@click.command()
+@click.option(
+    '-h',
+    '--host',
+    default='minechat.dvmn.org',
+    help='Host to connect',
+    show_default=True,
+)
+@click.option(
+    '-p',
+    '--port',
+    default=5000,
+    type=int,
+    help='Port for connected host',
+    show_default=True,
+)
+@click.option(
+    '-h',
+    '--history',
+    default='chat-log.txt',
+    type=str,
+    help='Path to file to write chat history',
+    show_default=True,
+)
+def main(host, port, history):
+    asyncio.run(handle_read_chat(host=host, port=port, log_file=history))
 
 
 if __name__ == '__main__':
