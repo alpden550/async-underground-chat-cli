@@ -6,20 +6,24 @@ import click
 
 
 async def handle_read_chat(host=None, port=None, log_file='chat-log.txt'):
-    reader, _ = await asyncio.open_connection(
-        host=host,
-        port=port,
-    )
+    try:
+        reader, writer = await asyncio.open_connection(
+            host=host,
+            port=port,
+        )
 
-    await write_log_message('Установлено соединение\n', log_file)
+        await write_log_message('Установлено соединение\n', log_file)
 
-    while True:
-        line = await reader.readline()
-        if not line:
-            break
+        while True:
+            line = await reader.readline()
+            if not line:
+                break
 
-        line = line.decode()
-        await write_log_message(line, log_file)
+            line = line.decode()
+            await write_log_message(line, log_file)
+
+    finally:
+        writer.close()
 
 
 async def write_log_message(message, logfile):
